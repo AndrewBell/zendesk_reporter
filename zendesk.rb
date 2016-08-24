@@ -1,4 +1,11 @@
+# Created by Andrew Bell 08/24/2015
+# www.recursivechaos.com
+# andrew@recursivechaos.com
+# Licensed under MIT License 2016. See license.txt for details.
 
+
+
+require 'csv'
 require 'logger'
 require 'optparse'
 require 'bundler/setup'
@@ -71,6 +78,12 @@ queries.each do |query|
   end
 end
 
-open_tickets.each do |ticket|
-  log.info "Company: #{ticket.query} | Priority: #{ticket.priority} | Subject: #{ticket.subject} | Status: #{ticket.status} | Assignee: #{ticket.assignee_id} | ZenDesk: #{ticket.id} | Updated: #{ticket.updated_at} | #{ticket.id} "
+# Write to file
+timestamp = Time.now.strftime("%Y-%m-%d-%H-%M")
+CSV.open("export/report_#{timestamp}.csv", "wb") do |csv|
+  csv << ["Company", "Priority", "Subject", "Status", "Assignee", "Zendesk Id", "Updated"]
+  open_tickets.each do |ticket|
+    csv << [ticket.query, ticket.priority, ticket.subject, ticket.status, ticket.assignee_id, ticket.id, ticket.updated_at ]
+    log.debug "Company: #{ticket.query} | Priority: #{ticket.priority} | Subject: #{ticket.subject} | Status: #{ticket.status} | Assignee: #{ticket.assignee_id} | ZenDesk: #{ticket.id} | Updated: #{ticket.updated_at} "
+  end
 end
